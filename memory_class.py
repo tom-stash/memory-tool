@@ -67,9 +67,7 @@ class vol_process(object):
 
 		# Exit if this profile or kdbg is not found
 		if not profile or not kdbg:
-			print '[!] Something went wrong - '+\
-				'have you converted aff4 to raw with WinPMem?'
-			print '[i] Complete.'
+			print '[!] Profile and KDBG not found'
 			sys.exit(0)
 
 		profiles = profile.group(1).split(', ')
@@ -124,9 +122,9 @@ class vol_process(object):
 						vol = []
 						vol.append(volatility.group(1)) # 0 hex
 						vol.append(volatility.group(2)) # 1 name
-						vol.append(volatility.group(3)) # 2 src ip:port
-						vol.append(volatility.group(4)) # 3 dst ip:port
-						vol.append(volatility.group(5)) # 4 pid
+						vol.append(volatility.group(3)) # 2 pid
+						vol.append(volatility.group(4)) # 3 ppid
+						vol.append(volatility.group(5)) # 4 time
 						if volatility.group(2) != '':
 							self.procs.append(vol)
 					except:
@@ -214,7 +212,6 @@ class vol_process(object):
 				internal = False
 				self.ip = self.connection[3]
 
-				if '1.0.0.0' in self.ip: internal = True
 				if self.ip.startswith('10.'): internal = True
 				for i in range(16,32):
 					if self.ip.startswith('172.'+str(i)+'.'): internal = True
@@ -226,6 +223,7 @@ class vol_process(object):
 				if self.ip.startswith('191.255.'): internal = True
 				if self.ip.startswith('192.0.0.'): internal = True
 				if self.ip.startswith('223.255.255.'): internal = True
+				if '1.0.0.0' in self.ip: internal = True
 
 				if not internal:
 					service = self.procids[self.connection[5]]
@@ -317,7 +315,7 @@ class vol_process(object):
 			f.write(self.sha256(filename)+'\n')
 		f.close()
 	
-		api_key = '<insert here>'
+		api_key = '88f1c2a4d65fafaaf1e4e4beed6abb1a78c52684f670aae80a115bffaf1c8a14'
 	
 		print '[-] Performing VT lookup - this will take some time'
 		proc = subprocess.Popen(['python2.7','virustotal-search.py','-k',api_key, \
@@ -350,7 +348,7 @@ if __name__ == '__main__':
 
 	# Handle command line arguments and usage/help
 	parser = argparse.ArgumentParser()
-	parser.add_argument('image', help='machine identifier for processing')
+	parser.add_argument('image', help='image path')
 	args = parser.parse_args()
 	
 	# Run Volatility
